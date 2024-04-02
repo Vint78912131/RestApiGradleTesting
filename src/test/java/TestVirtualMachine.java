@@ -3,10 +3,25 @@ import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.*;
 
+import java.nio.charset.Charset;
+import java.util.Random;
+
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class TestVirtualMachine {
 
+    public String getRandomString(int length) {
+        int leftLimit = 97; // letter 'a'
+        int rightLimit = 122; // letter 'z'
+        Random random = new Random();
+        StringBuilder buffer = new StringBuilder(length);
+        for (int i = 0; i < length; i++) {
+            int randomLimitedInt = leftLimit + (int)
+                    (random.nextFloat() * (rightLimit - leftLimit + 1));
+            buffer.append((char) randomLimitedInt);
+        }
+        return buffer.toString();
+    }
 
     @BeforeAll
     public static void preparation() {
@@ -26,9 +41,7 @@ public class TestVirtualMachine {
     @Step ("Получить список виртуальных машин на сервере.")
     @Order(1)
     public void getVMListTest() {
-        String requestBody = "{\n" +
-                "\"node_id\":\"" + TestVz.srv_uuid.get(0) + "\"" +
-                "}";
+        String requestBody = "{\"node_id\":\"" + TestVz.srv_uuid.get(0) + "\"}";
         Response response = RestAssured
                 .given()
                 .header("Authorization", TestVz.jwtToken)
@@ -47,8 +60,10 @@ public class TestVirtualMachine {
         } catch (Exception e) {
             System.out.println(e.getMessage());
         } finally {
-            response.getBody().prettyPrint();
-            TestVz.getBody(response);
+            TestVz.getRequestBody("GET\n" +
+                    RestAssured.baseURI + "/vms\n" +
+                    requestBody);
+            TestVz.getResponseBody(response);
         }
     }
 
@@ -82,30 +97,32 @@ public class TestVirtualMachine {
         } catch (Exception e) {
             System.out.println(e.getMessage());
         } finally {
-            response.getBody().prettyPrint();
-            TestVz.getBody(response);
+            TestVz.getRequestBody("GET\n" +
+                    RestAssured.baseURI + "/vm/" + TestVz.vms_uuid.get(0));
+            TestVz.getResponseBody(response);
         }
     }
 
     @Test
-    @DisplayName("Clone VM")
+    @DisplayName("Create VM")
     @Epic(value = "Virtualization")
     @Story("Virtual Machine")
-    @Link(name = "doc link", url = "https://documenter.getpostman.com/view/607407/2s93CHtEzX#374319af-3e33-4790-9bee-cff185a80799")
-    @Feature("Clone VM")
-    @Description("Clone VM")
-    @Severity(SeverityLevel.MINOR)
-    @Step ("Клонирование виртуальной машины на сервере.")
-    @Order(9)
-    public void cloneVMTest() {
-        String requestBody = "{\"name\":\"Clone_VM_" + TestVz.vms_names.get(0) + "\"}";
+    @Link(name = "doc link", url = "https://documenter.getpostman.com/view/607407/2s93CHtEzX#39da2d45-4a44-40ab-ad7c-01a4967c1b26")
+    @Feature("Create VM")
+    @Description("Create VM")
+    @Severity(SeverityLevel.CRITICAL)
+    @Step ("Создание новой виртуальной машины на сервере.")
+    @Order(3)
+    public void createVMTest() {
+        String name = getRandomString(10);
+        String requestBody = "{\"name\":\"VM_" + name + "\"}";
         Response response = RestAssured
                 .given()
                 .header("Authorization", TestVz.jwtToken)
                 .contentType("application/json")
                 .body(requestBody)
                 .when()
-                .post("/vm/" + TestVz.vms_uuid.get(0)+ "/clone");
+                .post(TestVz.srv_uuid.get(0)+ "/vm");
         try {
             response.then()
                     .assertThat()
@@ -117,78 +134,10 @@ public class TestVirtualMachine {
         } catch (Exception e) {
             System.out.println(e.getMessage());
         } finally {
-            response.getBody().prettyPrint();
-            TestVz.getBody(response);
-        }
-    }
-
-    @Test
-    @DisplayName("Move VM")
-    @Epic(value = "Virtualization")
-    @Story("Virtual Machine")
-    @Link(name = "doc link", url = "https://documenter.getpostman.com/view/607407/2s93CHtEzX#374319af-3e33-4790-9bee-cff185a80799")
-    @Feature("Move VM")
-    @Description("Move VM")
-    @Severity(SeverityLevel.MINOR)
-    @Step ("Перемещение образа виртуальной машины на сервере.")
-    @Order(10)
-    public void moveVMTest() {
-        String requestBody = "{\"dst\":\"/home\"}";
-        Response response = RestAssured
-                .given()
-                .header("Authorization", TestVz.jwtToken)
-                .contentType("application/json")
-                .body(requestBody)
-                .when()
-                .post("/vm/" + TestVz.vms_uuid.get(0) + "/move");
-        try {
-            response.then()
-                    .assertThat()
-                    .statusCode(200)
-                    .contentType("application/json")
-                    .statusLine("HTTP/1.1 200 OK")
-            ;
-
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        } finally {
-            response.getBody().prettyPrint();
-            TestVz.getBody(response);
-        }
-    }
-
-    @Test
-    @DisplayName("Stop VM")
-    @Epic(value = "Virtualization")
-    @Story("Virtual Machine")
-    @Link(name = "doc link", url = "https://documenter.getpostman.com/view/607407/2s93CHtEzX#c5717036-a201-44e9-9290-915dfd9410bf")
-    @Feature("Stop VM")
-    @Description("Stop VM")
-    @Severity(SeverityLevel.MINOR)
-    @Step ("Остановка виртуальной машины на сервере.")
-    @Order(4)
-    public void stopVMTest() {
-        String requestBody = "{\"force\":false,\"acpi\":false,\"kill\":false}";
-        Response response = RestAssured
-                .given()
-                .header("Authorization", TestVz.jwtToken)
-                .contentType("application/json")
-                .body(requestBody)
-                .when()
-                .post("/vm/" + TestVz.vms_uuid.get(0) + "/stop");
-        try {
-            response.then()
-                    .assertThat()
-                    .statusCode(200)
-                    .contentType("application/json")
-                    .statusLine("HTTP/1.1 200 OK")
-            ;
-
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        } finally {
-            response.getBody().prettyPrint();
-            TestVz.getBody(response);
+            TestVz.getRequestBody("POST\n" +
+                    RestAssured.baseURI + TestVz.vms_uuid.get(0) + "/vm\n" +
+                    requestBody);
+            TestVz.getResponseBody(response);
         }
     }
 
@@ -202,7 +151,7 @@ public class TestVirtualMachine {
     @Description("Start VM")
     @Severity(SeverityLevel.MINOR)
     @Step ("Запуск виртуальной машины на сервере.")
-    @Order(3)
+    @Order(4)
     public void startVMTest() {
         Response response = RestAssured
                 .given()
@@ -221,11 +170,45 @@ public class TestVirtualMachine {
         } catch (Exception e) {
             System.out.println(e.getMessage());
         } finally {
-            response.getBody().prettyPrint();
-            TestVz.getBody(response);
+            TestVz.getRequestBody("POST\n" +
+                    RestAssured.baseURI + "/vm/" + TestVz.vms_uuid.get(0) + "/start");
+            TestVz.getResponseBody(response);
         }
     }
 
+    @Test
+    @DisplayName("Restart VM")
+    @Epic(value = "Virtualization")
+    @Story("Virtual Machine")
+    @Link(name = "doc link", url = "TO DO")
+    @Feature("Restart VM")
+    @Description("Restart VM")
+    @Severity(SeverityLevel.MINOR)
+    @Step ("Перезапуск виртуальной машины на сервере.")
+    @Order(5)
+    public void restartVMTest() {
+        Response response = RestAssured
+                .given()
+                .header("Authorization", TestVz.jwtToken)
+                .contentType("application/json")
+                .when()
+                .post("/vm/" + TestVz.vms_uuid.get(0) + "/restart");
+        try {
+            response.then()
+                    .assertThat()
+                    .statusCode(200)
+                    .contentType("application/json")
+                    .statusLine("HTTP/1.1 200 OK")
+            ;
+
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        } finally {
+            TestVz.getRequestBody("POST\n" +
+                    RestAssured.baseURI + "/vm/" + TestVz.vms_uuid.get(0) + "/restart");
+            TestVz.getResponseBody(response);
+        }
+    }
 
     @Test
     @DisplayName("Pause VM")
@@ -236,7 +219,7 @@ public class TestVirtualMachine {
     @Description("Pause VM")
     @Severity(SeverityLevel.MINOR)
     @Step ("Остановка виртуальной машины на сервере.")
-    @Order(5)
+    @Order(6)
     public void pauseVMTest() {
         Response response = RestAssured
                 .given()
@@ -255,43 +238,9 @@ public class TestVirtualMachine {
         } catch (Exception e) {
             System.out.println(e.getMessage());
         } finally {
-            response.getBody().prettyPrint();
-            TestVz.getBody(response);
-        }
-    }
-
-    @Test
-    @DisplayName("Resume VM")
-    @Epic(value = "Virtualization")
-    @Story("Virtual Machine")
-    @Link(name = "doc link", url = "https://documenter.getpostman.com/view/607407/2s93CHtEzX#95afe3ce-7e61-46b6-803a-4d18de7e1efa")
-    @Feature("Resume VM")
-    @Description("Resume VM")
-    @Severity(SeverityLevel.MINOR)
-    @Step ("Возобновление работы виртуальной машины на сервере.")
-    @Order(6)
-    public void resumeVMTest() {
-        String requestBody = "{}";
-        Response response = RestAssured
-                .given()
-                .header("Authorization", TestVz.jwtToken)
-                .contentType("application/json")
-                .body(requestBody)
-                .when()
-                .post("/vm/" + TestVz.vms_uuid.get(0) + "/resume");
-        try {
-            response.then()
-                    .assertThat()
-                    .statusCode(200)
-                    .contentType("application/json")
-                    .statusLine("HTTP/1.1 200 OK")
-            ;
-
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        } finally {
-            response.getBody().prettyPrint();
-            TestVz.getBody(response);
+            TestVz.getRequestBody("POST\n" +
+                    RestAssured.baseURI + "/vm/" + TestVz.vms_uuid.get(0) + "/pause");
+            TestVz.getResponseBody(response);
         }
     }
 
@@ -325,8 +274,205 @@ public class TestVirtualMachine {
         } catch (Exception e) {
             System.out.println(e.getMessage());
         } finally {
-            response.getBody().prettyPrint();
-            TestVz.getBody(response);
+            TestVz.getRequestBody("POST\n" +
+                    RestAssured.baseURI + "/vm/" + TestVz.vms_uuid.get(0) + "/suspend\n" +
+                    requestBody);
+            TestVz.getResponseBody(response);
+        }
+    }
+
+
+    @Test
+    @DisplayName("Resume VM")
+    @Epic(value = "Virtualization")
+    @Story("Virtual Machine")
+    @Link(name = "doc link", url = "https://documenter.getpostman.com/view/607407/2s93CHtEzX#95afe3ce-7e61-46b6-803a-4d18de7e1efa")
+    @Feature("Resume VM")
+    @Description("Resume VM")
+    @Severity(SeverityLevel.MINOR)
+    @Step ("Возобновление работы виртуальной машины на сервере.")
+    @Order(8)
+    public void resumeVMTest() {
+        String requestBody = "{}";
+        Response response = RestAssured
+                .given()
+                .header("Authorization", TestVz.jwtToken)
+                .contentType("application/json")
+                .body(requestBody)
+                .when()
+                .post("/vm/" + TestVz.vms_uuid.get(0) + "/resume");
+        try {
+            response.then()
+                    .assertThat()
+                    .statusCode(200)
+                    .contentType("application/json")
+                    .statusLine("HTTP/1.1 200 OK")
+            ;
+
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        } finally {
+            TestVz.getRequestBody("POST\n" +
+                    RestAssured.baseURI + "/vm/" + TestVz.vms_uuid.get(0) + "/resume\n" +
+                    requestBody);
+            TestVz.getResponseBody(response);
+        }
+    }
+
+
+    @Test
+    @DisplayName("Stop VM")
+    @Epic(value = "Virtualization")
+    @Story("Virtual Machine")
+    @Link(name = "doc link", url = "https://documenter.getpostman.com/view/607407/2s93CHtEzX#c5717036-a201-44e9-9290-915dfd9410bf")
+    @Feature("Stop VM")
+    @Description("Stop VM")
+    @Severity(SeverityLevel.MINOR)
+    @Step ("Остановка виртуальной машины на сервере.")
+    @Order(9)
+    public void stopVMTest() {
+        String requestBody = "{\"force\":false,\"acpi\":false,\"kill\":false}";
+        Response response = RestAssured
+                .given()
+                .header("Authorization", TestVz.jwtToken)
+                .contentType("application/json")
+                .body(requestBody)
+                .when()
+                .post("/vm/" + TestVz.vms_uuid.get(0) + "/stop");
+        try {
+            response.then()
+                    .assertThat()
+                    .statusCode(200)
+                    .contentType("application/json")
+                    .statusLine("HTTP/1.1 200 OK")
+            ;
+
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        } finally {
+            TestVz.getRequestBody("POST\n" +
+                    RestAssured.baseURI + "/vm/" + TestVz.vms_uuid.get(0) + "/stop\n" +
+                    requestBody);
+            TestVz.getResponseBody(response);
+        }
+    }
+
+
+
+    @Test
+    @DisplayName("Clone VM")
+    @Epic(value = "Virtualization")
+    @Story("Virtual Machine")
+    @Link(name = "doc link", url = "https://documenter.getpostman.com/view/607407/2s93CHtEzX#374319af-3e33-4790-9bee-cff185a80799")
+    @Feature("Clone VM")
+    @Description("Clone VM")
+    @Severity(SeverityLevel.MINOR)
+    @Step ("Клонирование виртуальной машины на сервере.")
+    @Order(10)
+    public void cloneVMTest() {
+        String requestBody = "{\"name\":\"Clone_" + TestVz.vms_names.get(0) + "\"}";
+        Response response = RestAssured
+                .given()
+                .header("Authorization", TestVz.jwtToken)
+                .contentType("application/json")
+                .body(requestBody)
+                .when()
+                .post("/vm/" + TestVz.vms_uuid.get(0)+ "/clone");
+        try {
+            response.then()
+                    .assertThat()
+                    .statusCode(200)
+                    .contentType("application/json")
+                    .statusLine("HTTP/1.1 200 OK")
+            ;
+
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        } finally {
+            TestVz.getRequestBody("POST\n" +
+                    RestAssured.baseURI + "/vm/" + TestVz.vms_uuid.get(0) + "/clone\n" +
+                    requestBody);
+            TestVz.getResponseBody(response);
+        }
+    }
+
+    @Test
+    @DisplayName("Configure VM")
+    @Epic(value = "Virtualization")
+    @Story("Virtual Machine")
+    @Link(name = "doc link", url = "TO DO")
+    @Feature("Configure VM")
+    @Description("Configure VM")
+    @Severity(SeverityLevel.MINOR)
+    @Step ("Изменение конфигурации виртуальной машины на сервере.")
+    @Order(11)
+    public void configureVMTest() {
+        String text = getRandomString(5);
+        String requestBody = "{\n" +
+                "    \"name\":\"edited_" + text + "\",\n" +
+                "    \"description\":\"patched " + text + "\",\n" +
+                "    \"cpus\":1,\n" +
+                "    \"memSize\":500,\n" +
+                "    \"videoSize\":50\n" +
+                "}";
+        Response response = RestAssured
+                .given()
+                .header("Authorization", TestVz.jwtToken)
+                .contentType("application/json")
+                .body(requestBody)
+                .when()
+                .patch("/vm/" + TestVz.vms_uuid.get(0));
+        try {
+            response.then()
+                    .assertThat()
+                    .statusCode(200)
+                    .contentType("application/json")
+                    .statusLine("HTTP/1.1 200 OK")
+            ;
+
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        } finally {
+            TestVz.getRequestBody("PATCH\n" +
+                    RestAssured.baseURI + "/vm/" + TestVz.vms_uuid.get(0) + "\n" +
+                    requestBody);
+            TestVz.getResponseBody(response);
+        }
+    }
+    @Test
+    @DisplayName("Move VM")
+    @Epic(value = "Virtualization")
+    @Story("Virtual Machine")
+    @Link(name = "doc link", url = "https://documenter.getpostman.com/view/607407/2s93CHtEzX#374319af-3e33-4790-9bee-cff185a80799")
+    @Feature("Move VM")
+    @Description("Move VM")
+    @Severity(SeverityLevel.MINOR)
+    @Step ("Перемещение образа виртуальной машины на сервере.")
+    @Order(12)
+    public void moveVMTest() {
+        String requestBody = "{\"dst\":\"/usr/\"}";
+        Response response = RestAssured
+                .given()
+                .header("Authorization", TestVz.jwtToken)
+                .contentType("application/json")
+                .body(requestBody)
+                .when()
+                .post("/vm/" + TestVz.vms_uuid.get(0) + "/move");
+        try {
+            response.then()
+                    .assertThat()
+                    .statusCode(200)
+                    .contentType("application/json")
+                    .statusLine("HTTP/1.1 200 OK")
+            ;
+
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        } finally {
+            TestVz.getRequestBody("POST\n" +
+                    RestAssured.baseURI + "/vm/" + TestVz.vms_uuid.get(0) + "/move\n" +
+                    requestBody);
+            TestVz.getResponseBody(response);
         }
     }
 
@@ -339,7 +485,7 @@ public class TestVirtualMachine {
     @Description("Migrate VM")
     @Severity(SeverityLevel.MINOR)
     @Step ("Миграция виртуальной машины на другой сервер.")
-    @Order(8)
+    @Order(13)
     public void migrateVMTest() {
         String requestBody = "{\"dst\":\"" + TestVz.srv_ip.get(0) + "\"}";
         Response response = RestAssured
@@ -360,8 +506,10 @@ public class TestVirtualMachine {
         } catch (Exception e) {
             System.out.println(e.getMessage());
         } finally {
-            response.getBody().prettyPrint();
-            TestVz.getBody(response);
+            TestVz.getRequestBody("POST\n" +
+                    RestAssured.baseURI + "/vm/" + TestVz.vms_uuid.get(0) + "/migrate\n" +
+                    requestBody);
+            TestVz.getResponseBody(response);
         }
     }
 
@@ -374,7 +522,7 @@ public class TestVirtualMachine {
     @Description("Delete VM")
     @Severity(SeverityLevel.MINOR)
     @Step ("Удаление виртуальной машины.")
-    @Order(11)
+    @Order(14)
     public void deleteVMTest() {
         String requestBody = "{\"force\":true}";
         Response response = RestAssured
@@ -395,8 +543,10 @@ public class TestVirtualMachine {
         } catch (Exception e) {
             System.out.println(e.getMessage());
         } finally {
-            response.getBody().prettyPrint();
-            TestVz.getBody(response);
+            TestVz.getRequestBody("DELETE\n" +
+                    RestAssured.baseURI + "/vm/" + TestVz.vms_uuid.get(0) + "\n" +
+                    requestBody);
+            TestVz.getResponseBody(response);
         }
     }
 

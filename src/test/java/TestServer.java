@@ -1,18 +1,13 @@
 import io.qameta.allure.*;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.junit.jupiter.api.*;
-import java.util.*;
 
 public class TestServer {
 
     @BeforeAll
     public static void preparation() {
         TestVz.setCookies();
-        TestVz.setServersInfo();
-        TestVz.setVMInfo();
     }
 
     @Test
@@ -41,7 +36,10 @@ public class TestServer {
         } catch (Exception e) {
             System.out.println(e.getMessage());
         } finally {
-            TestVz.getBody(response);
+            TestVz.getRequestBody("GET\n" +
+                    RestAssured.baseURI +
+                    "/nodes\n");
+            TestVz.getResponseBody(response);
         }
     }
 

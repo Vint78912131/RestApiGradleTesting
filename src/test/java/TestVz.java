@@ -80,8 +80,8 @@ public class TestVz {
         } catch (Exception e) {
             System.out.println(e.getMessage());
         } finally {
-            response.getBody().prettyPrint();
-            TestVz.getBody(response);
+//            System.out.println("vms_uuids: " + vms_uuid);
+//            System.out.println("vms_names: " + vms_names);
         }
     }
 
@@ -107,15 +107,19 @@ public class TestVz {
         } catch (Exception e) {
             System.out.println(e.getMessage());
         } finally {
-            response.getBody().prettyPrint();
-            TestVz.getBody(response);
+//            response.getBody().prettyPrint();
+//            TestVz.getResponseBody(response);
         }
     }
 
 
+    @Attachment(value = "Request", type = "application/json", fileExtension = ".txt")
+    public static String getRequestBody(String request) {
+        return request;
+    }
 
     @Attachment(value = "Response", type = "application/json", fileExtension = ".txt")
-    public static String getBody(Response response) {
+    public static String getResponseBody(Response response) {
         return response.getBody().prettyPrint();
     }
 }
