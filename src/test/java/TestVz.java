@@ -24,14 +24,16 @@ public class TestVz {
 
     public static JSONArray hosts;
     public static JSONArray vms;
-
+    public static JSONArray snapshots;
+    public static JSONArray backups;
 
     public static List<String> srv_uuid = new ArrayList<>();
     public static List<String> srv_ip = new ArrayList<>();
     public static List<String> vms_uuid = new ArrayList<>();
     public static List<String> vms_names = new ArrayList<>();
+    public static List<String> snapshots_uuid = new ArrayList<>();
 
-
+    public static List<String> backups_uuid = new ArrayList<>();
     public static void setCookies () {
         RestAssured.baseURI = TestVz.endpoint;
         JSONObject requestBody = new JSONObject()
@@ -109,6 +111,59 @@ public class TestVz {
         } finally {
 //            response.getBody().prettyPrint();
 //            TestVz.getResponseBody(response);
+        }
+    }
+
+    public static List<String> getSnapshotVMList (String vm_uuid) {
+        Response response = RestAssured
+                .given()
+                .header("Authorization", TestVz.jwtToken)
+                .contentType("application/json")
+                .when()
+                .get("/vm/" + vm_uuid + "/snapshot");
+        try {
+            JSONObject body = new JSONObject(response.getBody().asString());
+            JSONObject payload = (JSONObject) body.get("payload");
+            snapshots = payload.getJSONArray("snapshots");
+
+            snapshots_uuid.clear();
+            for (int i = 0; i < snapshots.length(); i++) {
+                snapshots_uuid.add(snapshots.getJSONObject(i).get("uuid").toString());
+            }
+
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        } finally {
+            System.out.println("getSnapshotVMList is done");
+            return snapshots_uuid;
+        }
+    }
+
+    public static List<String> getBackupVMList (String vm_uuid) {
+        Response response = RestAssured
+                .given()
+                .header("Authorization", TestVz.jwtToken)
+                .contentType("application/json")
+                .param("vm_uuid", vm_uuid)
+                .when()
+                .get("/vm/backup/list");
+        try {
+            JSONObject body = new JSONObject(response.getBody().asString());
+            System.out.println(body);
+            JSONObject payload = (JSONObject) body.get("payload");
+            System.out.println(payload);
+            backups = payload.getJSONArray("backups");
+
+            backups_uuid.clear();
+            for (int i = 0; i < backups.length(); i++) {
+                backups_uuid.add(backups.getJSONObject(i).get("Backup_ID").toString());
+            }
+
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        } finally {
+            System.out.println("getBackupsVMList is done");
+            return backups_uuid;
         }
     }
 
