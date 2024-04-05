@@ -9,7 +9,6 @@ import java.util.Random;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class TestSnapshot {
-
     public String getRandomString(int length) {
         int leftLimit = 97; // letter 'a'
         int rightLimit = 122; // letter 'z'
@@ -52,14 +51,11 @@ public class TestSnapshot {
                 .body(requestBody)
                 .when()
                 .post("/vm/" + vm_uuid + "/snapshot");
-
             response.then()
                     .assertThat()
                     .statusCode(200)
                     .contentType("application/json")
-                    .statusLine("HTTP/1.1 200 OK")
-            ;
-
+                    .statusLine("HTTP/1.1 200 OK");
         } catch (Exception e) {
             System.out.println(e.getMessage());
         } finally {
@@ -96,9 +92,7 @@ public class TestSnapshot {
                     .assertThat()
                     .statusCode(200)
                     .contentType("application/json")
-                    .statusLine("HTTP/1.1 200 OK")
-            ;
-
+                    .statusLine("HTTP/1.1 200 OK");
         } catch (Exception e) {
             System.out.println(e.getMessage());
         } finally {
@@ -120,7 +114,7 @@ public class TestSnapshot {
     @Step ("Переключение снапшота виртуальной машины на сервере.")
     @Order(3)
     public void switchSnapshotVMTest() {
-            List <String> snapshots_uuid = null;
+            List <String> snapshots_uuid;
             String uuid = null;
             Response response = null;
             String vm_uuid = null;
@@ -135,14 +129,11 @@ public class TestSnapshot {
                 .contentType("application/json")
                 .when()
                 .post("/vm/" + vm_uuid + "/snapshot/" + uuid);
-
             response.then()
                     .assertThat()
                     .statusCode(200)
                     .contentType("application/json")
-                    .statusLine("HTTP/1.1 200 OK")
-            ;
-
+                    .statusLine("HTTP/1.1 200 OK");
         } catch (Exception e) {
             System.out.println(e.getMessage());
         } finally {
@@ -151,9 +142,6 @@ public class TestSnapshot {
             TestVz.getResponseBody(response);
         }
     }
-
-
-
 
     @Test
     @DisplayName("Get snapshot VM parametrs")
@@ -166,7 +154,7 @@ public class TestSnapshot {
     @Step ("Получение параметров снапшотов виртуальной машины на сервере.")
     @Order(4)
     public void getSnapshotVMParametersTest() {
-            List<String> snapshots_uuid = null;
+            List<String> snapshots_uuid;
             String uuid = null;
             Response response = null;
             String vm_uuid = null;
@@ -180,14 +168,11 @@ public class TestSnapshot {
                 .contentType("application/json")
                 .when()
                 .get("/vm/" + vm_uuid + "/snapshot/" + uuid);
-
             response.then()
                     .assertThat()
                     .statusCode(200)
                     .contentType("application/json")
-                    .statusLine("HTTP/1.1 200 OK")
-            ;
-
+                    .statusLine("HTTP/1.1 200 OK");
         } catch (Exception e) {
             System.out.println(e.getMessage());
         } finally {
@@ -208,7 +193,7 @@ public class TestSnapshot {
     @Step ("Удаление снапшота виртуальной машины на сервере.")
     @Order(5)
     public void deleteSnapshotVMTest() {
-            List<String> snapshots_uuid = null;
+            List<String> snapshots_uuid;
             String uuid = null;
             Response response = null;
             String vm_uuid = null;
@@ -224,14 +209,11 @@ public class TestSnapshot {
                 .body(requestBody)
                 .when()
                 .delete("/vm/" + vm_uuid + "/snapshot/" + uuid);
-
             response.then()
                     .assertThat()
                     .statusCode(200)
                     .contentType("application/json")
-                    .statusLine("HTTP/1.1 200 OK")
-            ;
-
+                    .statusLine("HTTP/1.1 200 OK");
         } catch (Exception e) {
             System.out.println(e.getMessage());
         } finally {
@@ -241,6 +223,4 @@ public class TestSnapshot {
             TestVz.getResponseBody(response);
         }
     }
-
-
 }

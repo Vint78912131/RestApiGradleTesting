@@ -20,13 +20,14 @@ public class TestServer {
     @Severity(SeverityLevel.MINOR)
     @Step ("Получить список серверов кластера.")
     public void getServerList () {
-        Response response = RestAssured
-                .given()
-                .header("Authorization",TestVz.jwtToken)
-                .contentType("application/json")
-                .when()
-                .get("/nodes");
+            Response response = null;
         try {
+            response = RestAssured
+                    .given()
+                    .header("Authorization",TestVz.jwtToken)
+                    .contentType("application/json")
+                    .when()
+                    .get("/nodes");
             response.then()
                     .assertThat()
                     .statusCode(200)

@@ -41,15 +41,17 @@ public class TestVirtualMachine {
     @Step ("Получить список виртуальных машин на сервере.")
     @Order(1)
     public void getVMListTest() {
-        String requestBody = "{\"node_id\":\"" + TestVz.srv_uuid.get(0) + "\"}";
-        Response response = RestAssured
-                .given()
-                .header("Authorization", TestVz.jwtToken)
-                .contentType("application/json")
-                .body(requestBody)
-                .when()
-                .get("/vms");
+            Response response = null;
+            String requestBody = null;
         try {
+            requestBody = "{\"node_id\":\"" + TestVz.srv_uuid.get(0) + "\"}";
+            response = RestAssured
+                    .given()
+                    .header("Authorization", TestVz.jwtToken)
+                    .contentType("application/json")
+                    .body(requestBody)
+                    .when()
+                    .get("/vms");
             response.then()
                     .assertThat()
                     .statusCode(200)
@@ -78,15 +80,14 @@ public class TestVirtualMachine {
     @Step ("Получить детальную информацию о виртуальной машине на сервере.")
     @Order(2)
     public void getVMInfoTest() {
-        Response response = RestAssured
-                .given()
-                .header("Authorization", TestVz.jwtToken)
-                .contentType("application/json")
-                .when()
-                .get("/vm/" + TestVz.vms_uuid.get(0));
+            Response response = null;
         try {
-
-            System.out.println(TestVz.vms_uuid.toString());
+            response = RestAssured
+                    .given()
+                    .header("Authorization", TestVz.jwtToken)
+                    .contentType("application/json")
+                    .when()
+                    .get("/vm/" + TestVz.vms_uuid.get(0));
             response.then()
                     .assertThat()
                     .statusCode(200)
@@ -114,23 +115,22 @@ public class TestVirtualMachine {
     @Step ("Создание новой виртуальной машины на сервере.")
     @Order(3)
     public void createVMTest() {
-        String name = getRandomString(10);
-        String requestBody = "{\"name\":\"VM_" + name + "\"}";
-        Response response = RestAssured
-                .given()
-                .header("Authorization", TestVz.jwtToken)
-                .contentType("application/json")
-                .body(requestBody)
-                .when()
-                .post(TestVz.srv_uuid.get(0)+ "/vm");
+            Response response = null;
+            String name = getRandomString(10);
+            String requestBody = "{\"name\":\"VM_" + name + "\"}";
         try {
+            response = RestAssured
+                    .given()
+                    .header("Authorization", TestVz.jwtToken)
+                    .contentType("application/json")
+                    .body(requestBody)
+                    .when()
+                    .post(TestVz.srv_uuid.get(0)+ "/vm");
             response.then()
                     .assertThat()
                     .statusCode(200)
                     .contentType("application/json")
-                    .statusLine("HTTP/1.1 200 OK")
-            ;
-
+                    .statusLine("HTTP/1.1 200 OK");
         } catch (Exception e) {
             System.out.println(e.getMessage());
         } finally {
@@ -153,20 +153,19 @@ public class TestVirtualMachine {
     @Step ("Запуск виртуальной машины на сервере.")
     @Order(4)
     public void startVMTest() {
-        Response response = RestAssured
-                .given()
-                .header("Authorization", TestVz.jwtToken)
-                .contentType("application/json")
-                .when()
-                .post("/vm/" + TestVz.vms_uuid.get(0) + "/start");
+            Response response = null;
         try {
+            response = RestAssured
+                    .given()
+                    .header("Authorization", TestVz.jwtToken)
+                    .contentType("application/json")
+                    .when()
+                    .post("/vm/" + TestVz.vms_uuid.get(0) + "/start");
             response.then()
                     .assertThat()
                     .statusCode(200)
                     .contentType("application/json")
-                    .statusLine("HTTP/1.1 200 OK")
-            ;
-
+                    .statusLine("HTTP/1.1 200 OK");
         } catch (Exception e) {
             System.out.println(e.getMessage());
         } finally {
@@ -187,20 +186,19 @@ public class TestVirtualMachine {
     @Step ("Перезапуск виртуальной машины на сервере.")
     @Order(5)
     public void restartVMTest() {
-        Response response = RestAssured
-                .given()
-                .header("Authorization", TestVz.jwtToken)
-                .contentType("application/json")
-                .when()
-                .post("/vm/" + TestVz.vms_uuid.get(0) + "/restart");
+            Response response = null;
         try {
+            response = RestAssured
+                    .given()
+                    .header("Authorization", TestVz.jwtToken)
+                    .contentType("application/json")
+                    .when()
+                    .post("/vm/" + TestVz.vms_uuid.get(0) + "/restart");
             response.then()
                     .assertThat()
                     .statusCode(200)
                     .contentType("application/json")
-                    .statusLine("HTTP/1.1 200 OK")
-            ;
-
+                    .statusLine("HTTP/1.1 200 OK");
         } catch (Exception e) {
             System.out.println(e.getMessage());
         } finally {
@@ -221,19 +219,19 @@ public class TestVirtualMachine {
     @Step ("Остановка виртуальной машины на сервере.")
     @Order(6)
     public void pauseVMTest() {
-        Response response = RestAssured
-                .given()
-                .header("Authorization", TestVz.jwtToken)
-                .contentType("application/json")
-                .when()
-                .post("/vm/" + TestVz.vms_uuid.get(0) + "/pause");
+            Response response = null;
         try {
+            response = RestAssured
+                    .given()
+                    .header("Authorization", TestVz.jwtToken)
+                    .contentType("application/json")
+                    .when()
+                    .post("/vm/" + TestVz.vms_uuid.get(0) + "/pause");
             response.then()
                     .assertThat()
                     .statusCode(200)
                     .contentType("application/json")
-                    .statusLine("HTTP/1.1 200 OK")
-            ;
+                    .statusLine("HTTP/1.1 200 OK");
 
         } catch (Exception e) {
             System.out.println(e.getMessage());
@@ -255,22 +253,22 @@ public class TestVirtualMachine {
     @Step ("Приостановка работы виртуальной машины на сервере.")
     @Order(7)
     public void suspendVMTest() {
-        String requestBody = "{}";
-        Response response = RestAssured
-                .given()
-                .header("Authorization", TestVz.jwtToken)
-                .contentType("application/json")
-                .body(requestBody)
-                .when()
-                .post("/vm/" + TestVz.vms_uuid.get(0) +"/suspend");
+            Response response = null;
+            String requestBody = null;
         try {
+            requestBody = "{}";
+            response = RestAssured
+                    .given()
+                    .header("Authorization", TestVz.jwtToken)
+                    .contentType("application/json")
+                    .body(requestBody)
+                    .when()
+                    .post("/vm/" + TestVz.vms_uuid.get(0) +"/suspend");
             response.then()
                     .assertThat()
                     .statusCode(200)
                     .contentType("application/json")
-                    .statusLine("HTTP/1.1 200 OK")
-            ;
-
+                    .statusLine("HTTP/1.1 200 OK");
         } catch (Exception e) {
             System.out.println(e.getMessage());
         } finally {
@@ -293,22 +291,22 @@ public class TestVirtualMachine {
     @Step ("Возобновление работы виртуальной машины на сервере.")
     @Order(8)
     public void resumeVMTest() {
-        String requestBody = "{}";
-        Response response = RestAssured
-                .given()
-                .header("Authorization", TestVz.jwtToken)
-                .contentType("application/json")
-                .body(requestBody)
-                .when()
-                .post("/vm/" + TestVz.vms_uuid.get(0) + "/resume");
+            Response response = null;
+            String requestBody = null;
         try {
+            requestBody = "{}";
+            response = RestAssured
+                    .given()
+                    .header("Authorization", TestVz.jwtToken)
+                    .contentType("application/json")
+                    .body(requestBody)
+                    .when()
+                    .post("/vm/" + TestVz.vms_uuid.get(0) + "/resume");
             response.then()
                     .assertThat()
                     .statusCode(200)
                     .contentType("application/json")
-                    .statusLine("HTTP/1.1 200 OK")
-            ;
-
+                    .statusLine("HTTP/1.1 200 OK");
         } catch (Exception e) {
             System.out.println(e.getMessage());
         } finally {
@@ -331,22 +329,22 @@ public class TestVirtualMachine {
     @Step ("Остановка виртуальной машины на сервере.")
     @Order(9)
     public void stopVMTest() {
-        String requestBody = "{\"force\":false,\"acpi\":false,\"kill\":false}";
-        Response response = RestAssured
-                .given()
-                .header("Authorization", TestVz.jwtToken)
-                .contentType("application/json")
-                .body(requestBody)
-                .when()
-                .post("/vm/" + TestVz.vms_uuid.get(0) + "/stop");
+            Response response = null;
+            String requestBody = null;
         try {
+            requestBody = "{\"force\":false,\"acpi\":false,\"kill\":false}";
+            response = RestAssured
+                    .given()
+                    .header("Authorization", TestVz.jwtToken)
+                    .contentType("application/json")
+                    .body(requestBody)
+                    .when()
+                    .post("/vm/" + TestVz.vms_uuid.get(0) + "/stop");
             response.then()
                     .assertThat()
                     .statusCode(200)
                     .contentType("application/json")
-                    .statusLine("HTTP/1.1 200 OK")
-            ;
-
+                    .statusLine("HTTP/1.1 200 OK");
         } catch (Exception e) {
             System.out.println(e.getMessage());
         } finally {
@@ -356,8 +354,6 @@ public class TestVirtualMachine {
             TestVz.getResponseBody(response);
         }
     }
-
-
 
     @Test
     @DisplayName("Clone VM")
@@ -370,22 +366,22 @@ public class TestVirtualMachine {
     @Step ("Клонирование виртуальной машины на сервере.")
     @Order(10)
     public void cloneVMTest() {
-        String requestBody = "{\"name\":\"Clone_" + TestVz.vms_names.get(0) + "\"}";
-        Response response = RestAssured
-                .given()
-                .header("Authorization", TestVz.jwtToken)
-                .contentType("application/json")
-                .body(requestBody)
-                .when()
-                .post("/vm/" + TestVz.vms_uuid.get(0)+ "/clone");
+            Response response = null;
+            String requestBody = null;
         try {
+            requestBody = "{\"name\":\"Clone_" + TestVz.vms_names.get(0) + "\"}";
+            response = RestAssured
+                    .given()
+                    .header("Authorization", TestVz.jwtToken)
+                    .contentType("application/json")
+                    .body(requestBody)
+                    .when()
+                    .post("/vm/" + TestVz.vms_uuid.get(0)+ "/clone");
             response.then()
                     .assertThat()
                     .statusCode(200)
                     .contentType("application/json")
-                    .statusLine("HTTP/1.1 200 OK")
-            ;
-
+                    .statusLine("HTTP/1.1 200 OK");
         } catch (Exception e) {
             System.out.println(e.getMessage());
         } finally {
@@ -407,29 +403,29 @@ public class TestVirtualMachine {
     @Step ("Изменение конфигурации виртуальной машины на сервере.")
     @Order(11)
     public void configureVMTest() {
-        String text = getRandomString(5);
-        String requestBody = "{\n" +
-                "    \"name\":\"edited_" + text + "\",\n" +
-                "    \"description\":\"patched " + text + "\",\n" +
-                "    \"cpus\":1,\n" +
-                "    \"memSize\":500,\n" +
-                "    \"videoSize\":50\n" +
-                "}";
-        Response response = RestAssured
-                .given()
-                .header("Authorization", TestVz.jwtToken)
-                .contentType("application/json")
-                .body(requestBody)
-                .when()
-                .patch("/vm/" + TestVz.vms_uuid.get(0));
+            Response response = null;
+            String requestBody = null;
+            String text = getRandomString(5);
         try {
+            requestBody = "{\n" +
+                    "    \"name\":\"edited_" + text + "\",\n" +
+                    "    \"description\":\"patched " + text + "\",\n" +
+                    "    \"cpus\":1,\n" +
+                    "    \"memSize\":500,\n" +
+                    "    \"videoSize\":50\n" +
+                    "}";
+            response = RestAssured
+                    .given()
+                    .header("Authorization", TestVz.jwtToken)
+                    .contentType("application/json")
+                    .body(requestBody)
+                    .when()
+                    .patch("/vm/" + TestVz.vms_uuid.get(0));
             response.then()
                     .assertThat()
                     .statusCode(200)
                     .contentType("application/json")
-                    .statusLine("HTTP/1.1 200 OK")
-            ;
-
+                    .statusLine("HTTP/1.1 200 OK");
         } catch (Exception e) {
             System.out.println(e.getMessage());
         } finally {
@@ -450,22 +446,22 @@ public class TestVirtualMachine {
     @Step ("Перемещение образа виртуальной машины на сервере.")
     @Order(12)
     public void moveVMTest() {
-        String requestBody = "{\"dst\":\"/usr/\"}";
-        Response response = RestAssured
-                .given()
-                .header("Authorization", TestVz.jwtToken)
-                .contentType("application/json")
-                .body(requestBody)
-                .when()
-                .post("/vm/" + TestVz.vms_uuid.get(0) + "/move");
+            Response response = null;
+            String requestBody = null;
         try {
+            requestBody = "{\"dst\":\"/usr/\"}";
+            response = RestAssured
+                    .given()
+                    .header("Authorization", TestVz.jwtToken)
+                    .contentType("application/json")
+                    .body(requestBody)
+                    .when()
+                    .post("/vm/" + TestVz.vms_uuid.get(0) + "/move");
             response.then()
                     .assertThat()
                     .statusCode(200)
                     .contentType("application/json")
-                    .statusLine("HTTP/1.1 200 OK")
-            ;
-
+                    .statusLine("HTTP/1.1 200 OK");
         } catch (Exception e) {
             System.out.println(e.getMessage());
         } finally {
@@ -487,22 +483,22 @@ public class TestVirtualMachine {
     @Step ("Миграция виртуальной машины на другой сервер.")
     @Order(13)
     public void migrateVMTest() {
-        String requestBody = "{\"dst\":\"" + TestVz.srv_ip.get(0) + "\"}";
-        Response response = RestAssured
-                .given()
-                .header("Authorization", TestVz.jwtToken)
-                .contentType("application/json")
-                .body(requestBody)
-                .when()
-                .post("/vm/" + TestVz.vms_uuid.get(0) +"/migrate");
+            Response response = null;
+            String requestBody = null;
         try {
+            requestBody = "{\"dst\":\"" + TestVz.srv_ip.get(0) + "\"}";
+            response = RestAssured
+                    .given()
+                    .header("Authorization", TestVz.jwtToken)
+                    .contentType("application/json")
+                    .body(requestBody)
+                    .when()
+                    .post("/vm/" + TestVz.vms_uuid.get(0) +"/migrate");
             response.then()
                     .assertThat()
                     .statusCode(200)
                     .contentType("application/json")
-                    .statusLine("HTTP/1.1 200 OK")
-            ;
-
+                    .statusLine("HTTP/1.1 200 OK");
         } catch (Exception e) {
             System.out.println(e.getMessage());
         } finally {
@@ -524,22 +520,22 @@ public class TestVirtualMachine {
     @Step ("Удаление виртуальной машины.")
     @Order(14)
     public void deleteVMTest() {
-        String requestBody = "{\"force\":true}";
-        Response response = RestAssured
-                .given()
-                .header("Authorization", TestVz.jwtToken)
-                .contentType("application/json")
-                .body(requestBody)
-                .when()
-                .delete("/vm/" + TestVz.vms_uuid.get(0));
+            Response response = null;
+            String requestBody = null;
         try {
+            requestBody = "{\"force\":true}";
+            response = RestAssured
+                    .given()
+                    .header("Authorization", TestVz.jwtToken)
+                    .contentType("application/json")
+                    .body(requestBody)
+                    .when()
+                    .delete("/vm/" + TestVz.vms_uuid.get(0));
             response.then()
                     .assertThat()
                     .statusCode(200)
                     .contentType("application/json")
-                    .statusLine("HTTP/1.1 200 OK")
-            ;
-
+                    .statusLine("HTTP/1.1 200 OK");
         } catch (Exception e) {
             System.out.println(e.getMessage());
         } finally {

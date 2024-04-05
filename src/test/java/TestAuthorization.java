@@ -22,17 +22,18 @@ public class TestAuthorization {
     @Step ("Успешная авторизация пользователя.")
     @Order(2)
     public void logInPositiveTest() {
-        RestAssured.baseURI = TestVz.endpoint;
-        JSONObject requestBody = new JSONObject()
+            RestAssured.baseURI = TestVz.endpoint;
+            JSONObject requestBody = new JSONObject()
                 .put("LoginPass", TestVz.password)
                 .put("LoginUser", TestVz.login);
-        Response response = RestAssured
-                .given()
-                .contentType("application/json")
-                .body(requestBody.toString())
-                .when()
-                .post("/login");
+            Response response = null;
         try {
+            response = RestAssured
+                    .given()
+                    .contentType("application/json")
+                    .body(requestBody.toString())
+                    .when()
+                    .post("/login");
             response.then()
                     .assertThat()
                     .statusCode(201)
@@ -60,18 +61,18 @@ public class TestAuthorization {
     @Step ("Не успешная авторизация пользователя.")
     @Order(1)
     public void logInNegativeTest() {
-        RestAssured.baseURI = TestVz.endpoint;
-        JSONObject requestBody = new JSONObject()
+            RestAssured.baseURI = TestVz.endpoint;
+            JSONObject requestBody = new JSONObject()
                 .put("LoginPass", "password")
                 .put("LoginUser", TestVz.login);
-        Response response = RestAssured
-                .given()
-                .contentType("application/json")
-                .body(requestBody.toString())
-                .when()
-                .post("/login");
-
+            Response response = null;
         try {
+            response = RestAssured
+                    .given()
+                    .contentType("application/json")
+                    .body(requestBody.toString())
+                    .when()
+                    .post("/login");
             response.then()
                     .assertThat()
                     .statusCode(401)

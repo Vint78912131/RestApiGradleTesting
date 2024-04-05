@@ -26,14 +26,17 @@ public class TestVz {
     public static JSONArray vms;
     public static JSONArray snapshots;
     public static JSONArray backups;
+    public static JSONArray users;
+    public static JSONArray groups;
 
     public static List<String> srv_uuid = new ArrayList<>();
     public static List<String> srv_ip = new ArrayList<>();
     public static List<String> vms_uuid = new ArrayList<>();
     public static List<String> vms_names = new ArrayList<>();
     public static List<String> snapshots_uuid = new ArrayList<>();
-
     public static List<String> backups_uuid = new ArrayList<>();
+    public static List<String> users_login = new ArrayList<>();
+    public static List<String> group_names = new ArrayList<>();
     public static void setCookies () {
         RestAssured.baseURI = TestVz.endpoint;
         JSONObject requestBody = new JSONObject()
@@ -139,6 +142,57 @@ public class TestVz {
         }
     }
 
+    public static List<String> getUsersList () {
+        Response response = RestAssured
+                .given()
+                .header("Authorization", TestVz.jwtToken)
+                .contentType("application/json")
+                .when()
+                .get("/users");
+        try {
+            JSONObject body = new JSONObject(response.getBody().asString());
+            JSONObject payload = (JSONObject) body.get("payload");
+            users = payload.getJSONArray("users");
+            users_login.clear();
+
+            for (int i = 0; i < users.length(); i++) {
+                users_login.add(users.getJSONObject(i).get("login").toString());
+            }
+
+            System.out.println(users_login);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        } finally {
+            System.out.println("getUsersList is done");
+            return users_login;
+        }
+    }
+
+    public static List<String> geGroupsList () {
+        Response response = RestAssured
+                .given()
+                .header("Authorization", TestVz.jwtToken)
+                .contentType("application/json")
+                .when()
+                .get("/groups");
+        try {
+            JSONObject body = new JSONObject(response.getBody().asString());
+            JSONObject payload = (JSONObject) body.get("payload");
+            groups = payload.getJSONArray("groups");
+            group_names.clear();
+
+            for (int i = 0; i < groups.length(); i++) {
+                group_names.add(groups.getJSONObject(i).get("name").toString());
+            }
+            System.out.println(group_names);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        } finally {
+            System.out.println("getGroupsList is done");
+            return group_names;
+        }
+    }
+
     public static List<String> getBackupVMList (String vm_uuid) {
         Response response = RestAssured
                 .given()
@@ -149,9 +203,7 @@ public class TestVz {
                 .get("/vm/backup/list");
         try {
             JSONObject body = new JSONObject(response.getBody().asString());
-            System.out.println(body);
             JSONObject payload = (JSONObject) body.get("payload");
-            System.out.println(payload);
             backups = payload.getJSONArray("backups");
 
             backups_uuid.clear();
@@ -166,6 +218,36 @@ public class TestVz {
             return backups_uuid;
         }
     }
+
+    public static Integer getOperationResult (String op_uuid) {
+        Integer status = 0;
+        Response response = null;
+        try {
+            response = RestAssured
+                    .given()
+                    .header("Authorization", TestVz.jwtToken)
+                    .contentType("application/json")
+                    .param("op_uuid", op_uuid)
+                    .when()
+                    .get("/operations");
+            JSONObject body = new JSONObject(response.getBody().asString());
+            JSONObject payload = body.getJSONObject("payload");
+            JSONArray operations = payload.getJSONArray("operations");
+            System.out.println(operations);
+            //JSONObject operation = operations.getJSONObject(0);
+            //status = Integer.valueOf(operation.get("status").toString());
+
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        } finally {
+            System.out.println("getOperationResult is done");
+            TestVz.getRequestBody("GET\n" +
+                    RestAssured.baseURI + "/operations");
+            TestVz.getResponseBody(response);
+            return status;
+        }
+    }
+
 
 
     @Attachment(value = "Request", type = "application/json", fileExtension = ".txt")
