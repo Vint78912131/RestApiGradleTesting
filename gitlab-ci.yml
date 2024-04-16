@@ -1,0 +1,34 @@
+image: java:latest
+
+stages:
+  - test
+  - report
+  - deploy
+
+test:
+  stage: test
+  script:
+    - ./gradlew clean test
+  rules:
+    - when: always
+
+report:
+  stage: report      
+    - ./gradlew allureReport
+  artifacts:
+    paths:
+      - ./build/allure-results/*
+      - ./reports/allure-report/allureReport/*
+  rules:
+    - when: always
+
+deploy:
+  stage: deploy
+  script:
+    - mkdir public
+    - cp -r ./reports/allure-report/allureReport/* public
+  artifacts:
+    paths:
+      - public
+  rules:
+    - when: always

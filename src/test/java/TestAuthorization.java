@@ -24,8 +24,8 @@ public class TestAuthorization {
     public void logInPositiveTest() {
             RestAssured.baseURI = TestVz.endpoint;
             JSONObject requestBody = new JSONObject()
-                .put("LoginPass", TestVz.password)
-                .put("LoginUser", TestVz.login);
+                .put("LoginPass", "1q2w3e")
+                .put("LoginUser", "root");
             Response response = null;
         try {
             response = RestAssured

@@ -4,7 +4,6 @@ import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
 import org.json.JSONArray;
 import org.json.JSONObject;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -13,9 +12,8 @@ import java.util.Map;
 public class TestVz {
 
     public static String endpoint = "http://192.168.12.40:80/api";
-
-    public static final String password = "1q2w3e";
-    public static final String login = "root";
+    public static String password = "1q2w3e";
+    public static String login = "root";
     public static Map<String,String> servers = new HashMap<>();
 
     public static String cookies = null;
@@ -38,18 +36,19 @@ public class TestVz {
     public static List<String> users_login = new ArrayList<>();
     public static List<String> group_names = new ArrayList<>();
     public static void setCookies () {
-        RestAssured.baseURI = TestVz.endpoint;
-        JSONObject requestBody = new JSONObject()
-                .put("LoginPass", password)
-                .put("LoginUser", login);
-        Response response = RestAssured
-                .given()
-                .contentType("application/json")
-                .body(requestBody.toString())
-                .when()
-                .post("/login");
-
+        Response response;
         try {
+            RestAssured.baseURI = TestVz.endpoint;
+            JSONObject requestBody = new JSONObject()
+                    .put("LoginPass", password)
+                    .put("LoginUser", login);
+
+            response = RestAssured
+                    .given()
+                    .contentType("application/json")
+                    .body(requestBody.toString())
+                    .when()
+                    .post("/login");
             response.then()
                     .assertThat()
                     .statusCode(201)
