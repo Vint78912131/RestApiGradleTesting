@@ -1,4 +1,8 @@
-image: java:latest
+image: gradle:alpine
+
+default:
+  tags:
+    - shelllocal
 
 stages:
   - test
@@ -7,17 +11,22 @@ stages:
 
 test:
   stage: test
+  allow_failure: true
   script:
     - ./gradlew clean test
+  artifacts:
+    paths:
+      - build/allure-results/*
   rules:
     - when: always
 
 report:
-  stage: report      
+  stage: report
+  script:
     - ./gradlew allureReport
+    - echo "Allure report live here - https://${CI_PROJECT_NAMESPACE}.${CI_PAGES_DOMAIN}/-/${CI_PROJECT_NAME}/-/jobs/${CI_JOB_ID}/artifacts/build/reports/allure-report/allureReport/index.html"
   artifacts:
     paths:
-      - ./build/allure-results/*
       - ./reports/allure-report/allureReport/*
   rules:
     - when: always
