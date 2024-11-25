@@ -31,10 +31,13 @@ dependencies {
 }
 
 test {
+//    testLogging {
+//        events "passed", "skipped", "failed", "standardOut", "standardError"
+//        exceptionFormat "full"
+//    }
     useJUnitPlatform()
 }
 
-//tasks.withType(Test) { jvmArgs += "-noverify" }
 
 compileJava.options.encoding = "UTF-8"
 compileTestJava.options.encoding = "UTF-8"
