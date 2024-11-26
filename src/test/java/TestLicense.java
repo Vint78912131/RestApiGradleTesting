@@ -5,6 +5,7 @@ import org.junit.jupiter.api.*;
 import org.testng.reporters.Files;
 import java.io.File;
 
+@Tag("License")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class TestLicense {
 

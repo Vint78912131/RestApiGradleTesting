@@ -3,15 +3,13 @@ import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+@Tag("HealthCheck")
 public class TestHealthCheck {
     public static JSONArray sessions = null;
     public static ArrayList<String> session_ids = new ArrayList<>();

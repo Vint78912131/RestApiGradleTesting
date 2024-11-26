@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+@Tag("Backup")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class TestBackup {
     public String getRandomString(int length) {

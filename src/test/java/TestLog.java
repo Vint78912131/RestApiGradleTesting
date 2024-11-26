@@ -3,6 +3,7 @@ import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.*;
 
+@Tag("Log")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class TestLog {
 

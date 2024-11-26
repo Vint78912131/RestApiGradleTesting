@@ -6,7 +6,7 @@ import org.junit.jupiter.api.*;
 import java.nio.charset.Charset;
 import java.util.Random;
 
-
+@Tag("VirtualMachine")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class TestVirtualMachine {
 
