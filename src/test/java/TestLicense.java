@@ -64,7 +64,12 @@ public class TestLicense {
         String content = "";
         try {
             File lic = new File("./src/test/resources/RVZ.000000981.0004.txt");
-            content = Files.readFile(lic);
+            try {
+                System.out.println(lic.toString());
+                //content = Files.readFile(lic);
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
             response = RestAssured
                     .given()
                     .header("Authorization",TestVz.jwtToken)

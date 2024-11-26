@@ -125,7 +125,7 @@ public class TestUsers {
                     .header("Authorization", TestVz.jwtToken)
                     .contentType("application/json")
                     .when()
-                    .get("/users/" + users_login.get(1));
+                    .get("/users/" + users_login.get(0));
 
             response.then()
                     .assertThat()
@@ -136,7 +136,7 @@ public class TestUsers {
             System.out.println(e.getMessage());
         } finally {
             TestVz.getRequestBody("GET\n" +
-                    RestAssured.baseURI + "/users/" + users_login.get(1));
+                    RestAssured.baseURI + "/users/" + users_login.get(0));
             TestVz.getResponseBody(response);
         }
     }

@@ -9,6 +9,7 @@ import org.junit.jupiter.api.*;
 
 import java.util.ArrayList;
 
+@Tag("Auth")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class TestAuthorization {
     @Test
